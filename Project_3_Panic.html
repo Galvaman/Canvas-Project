@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+	<head>
+	<title>Project 3</title>
+	<meta charset="utf-8">
+		<style>
+		canvas {
+		border: 20px solid red;;
+		}
+		</style>
+	<script>
+	var canvasvas;
+	var context;
+	var particles;
+	var timer;
+	var colors = ["red", "green", "blue", "yellow", "purple", "orange"];
+	
+	alert("It's party time!");
+	alert("WUB WUB WUB");
+	
+	function makeParticles() {
+		//creates an array of particles
+		particles = [];
+		for(var i = 0; i < 30; i++)
+		{
+			particles.push(new Particle());
+		}
+	}
+	
+	function degreesToRadians(degrees) {
+		//degrees to radians and back
+		return (degrees * Math.PI)/180;
+	}
+	//this constructs a single particle randomly
+	function Particle()
+	{
+		this.type = Math.floor(Math.random()*5);
+	
+		if(this.type == 0) //circles
+			{	
+			this.x = canvas.width/2;
+			this.y = canvas.height/2;
+			this.vx = Math.random()*10-5;
+			this.vy = Math.random()*10-5;
+			var colors = ["red"];
+			this.color = colors[Math.floor(Math.random()*colors.length)];
+			this.radius = 30;	
+			this.shape = 0;
+			}
+		else if(this.type == 1) //triangles
+			{	
+			this.x = canvas.width/2;
+			this.y = canvas.height/2;
+			this.vx = Math.random()*10-3;
+			this.vy = Math.random()*10-3;
+			var colors = ["green"];
+			this.color = colors[Math.floor(Math.random()*colors.length)];
+			this.shape = 1;
+			}
+		else if(this.type == 2) //squares
+			{
+			this.x = canvas.width/2;
+			this.y = canvas.height/2;
+			this.vx = Math.random()*10-1;
+			this.vy = Math.random()*10-1;
+			var colors = ["blue"];
+			this.color = colors[Math.floor(Math.random()*colors.length)];
+			this.size = 30;
+			this.shape = 2;
+			}
+		else if(this.type == 3) //hexagons
+			{
+			this.x = canvas.width/2;
+			this.y = canvas.height/2;
+			this.vx = Math.random()*10-7;
+			this.vy = Math.random()*10-7;
+			var colors = ["yellow"];
+			this.color = colors[Math.floor(Math.random()*colors.length)];
+			this.size = 20;
+			this.shape = 3;
+			}
+		else if(this.type == 4) //stars
+			{
+			this.x = canvas.width/2;
+			this.y = canvas.height/2;
+			this.vx = Math.random()*10-9;
+			this.vy = Math.random()*10-9;
+			var colors = ["purple"];
+			this.color = colors[Math.floor(Math.random()*colors.length)];
+			this.size = 20;
+			this.shape = 4;
+			}
+	}
+	
+	function drawParticle(particle)
+	{
+		if(particle.shape == 0){
+			context.beginPath();
+			context.arc(particle.x, particle.y, particle.radius, 0, degreesToRadians(360), true);
+			context.fillStyle = particle.color;
+			context.fill();
+		}
+		else if(particle.shape == 1){
+			context.rect(particle.x, particle.y, particle.size, particle.size);
+			context.fillStyle = particle.color;
+			context.fill();
+			var x = 400;
+			var y = 300;
+			var dx = 2; 
+			var dy = 4; 
+			width = 450; 
+			height = 700;
+			if (x + dx > width || x + dx < 0){
+				dx = -dx;
+			}if (y + dy > height || y + dy < 0){
+				dy = -dy;
+				x += dx;
+				y += dy;
+		}
+		else if(particle.shape == 2){
+			context.beginPath();
+			context.moveTo(particle.x + 60, 45);
+			context.lineTo(particle.x + 80, 45);
+			context.lineTo(particle.x + 70, 10);
+			context.fillStyle = particle.color;
+			context.fill();
+			}
+		}
+		else if(particle.shape == 3){
+			var numberOfSides = 6;
+			context.beginPath();
+			context.moveTo (particle.x +  particle.size * Math.cos(0), particle.y +  particle.size *  Math.sin(0));          
+			for (var i = 1; i <= numberOfSides;i += 1) {
+				context.lineTo (particle.x + particle.size * Math.cos(i * 2 * Math.PI / numberOfSides), 
+				particle.y + particle.size * Math.sin(i * 2 * Math.PI / numberOfSides));
+			}
+			context.fillStyle = particle.color;
+			context.fill();
+			context.lineWidth = 1;
+			context.stroke();
+		}
+		else if(particle.shape == 4){
+			size = particle.size;
+			context.moveTo(5, particle.y + 5);
+			context.lineTo(12, particle.y + 15);
+			context.lineTo(0, particle.y + 18); 
+			context.lineTo(12, particle.y + 21);
+			context.lineTo(5, particle.y + 31);  
+			context.lineTo(16, particle.y + 25);
+			context.lineTo(19, particle.y + 37);
+			context.lineTo(22, particle.y + 25);
+			context.lineTo(33, particle.y + 31);
+			context.lineTo(26, particle.y + 21);
+			context.lineTo(38, particle.y + 18);
+			context.closePath();
+			context.stroke();
+			context.fillStyle = particle.color;
+			context.fill();
+		}
+	}
+	
+	function animateParticle(particle){
+		if(particle.type == 0){
+			particle.radius -= 1;
+		if (particle.radius < 0)
+			particle.radius += 1;
+		if (particle.radius > 0)
+			particle.radius = 0;
+		}			
+	}
+	
+	function moveParticles() {
+		//partially clear the screen to fade previous circles, and draw a new particle at each new coordinate
+		context.globalCompositeOperation = "source-over";
+		context.fillStyle = "rgba(0, 0, 0, 0.3)";
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		context.globalCompositeOperation = "lighter";
+		for(var i = 0; i < particles.length; i++)
+		{
+			var p = particles[i];
+			
+			drawParticle(p);
+			p.x += p.vx;
+			p.y += p.vy;
+			if(p.x < -50) p.x = canvas.width+50;
+			if(p.y < -50) p.y = canvas.height+50;
+			if(p.x > canvas.width+50) p.x = -50;
+			if(p.y > canvas.height+50) p.y = -50;
+			animateParticle(p);
+		}
+	}
+	
+	function resizecanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+		fillBackgroundColor();
+		for (var i=0; i<circles.length; i++) {
+		 }
+	}
+	
+	function fillBackgroundColor() {
+		context.fillStyle = 'black';
+		context.fillRect(0, 0, canvas.width, canvas.height);
+	}
+	
+	window.onload = function() {
+		canvas = document.getElementById('canvas');
+		context = canvas.getContext('2d');
+		context = canvas.getContext('2d');
+			context.font = "60px Arial";
+			context.textAlign = 'top';
+				var i, n = 0, 
+				components = [0, 0, 0], 
+				operations = [1, 2, 3];
+				
+			function draw(){
+			context.clearRect(0, 0, 0, 0);
+			context.fillStyle = "rgb("+components.join(',')+")";
+			context.textBaseline = 'top'
+			  
+			// Rotating text
+			context.save();
+			context.translate(250, 150);
+			context.rotate(0.01*n--);
+			context.textBaseline = 'center';
+			context.fillText('PARTY', 20, 20);
+			context.restore();
+			  
+			for(i = 0; i < 3; i++) {
+				components[i] += operations[i];
+				if ((components[i] >= 256) || (components[i] <= 0)) operations[i] *= -1;
+			}  
+				setTimeout(draw, 10);
+			}
+				draw();
+				
+		makeParticles();
+		timer = setInterval(moveParticles, 50);
+	}
+	</script>
+	</head>
+	<body>
+		<canvas id="canvas" width="600" height="200"></canvas>
+	</body>
+</html>
